@@ -1,53 +1,32 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue';
-import TheWelcome from './components/TheWelcome.vue';
+import LineEditor from '@/components/LineEditor.vue';
+import EasingPreview from './components/EasingPreview.vue';
+import PresetSwitcher from './components/PresetSwitcher.vue';
+import SelectCategory from './components/SelectCategory.vue';
 </script>
 
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="./assets/logo.svg"
-      width="125"
-      height="125"
-    />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div class="wrapper">
+    <EasingPreview />
+    <div class="block">
+      <SelectCategory />
+      <LineEditor />
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <PresetSwitcher />
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.wrapper {
+  background-color: #252626;
+  border-radius: 6px;
+  height: 350px;
+  padding: 15px;
+  width: 270px;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.block {
+  display: flex;
+  margin-top: 20px;
 }
 </style>
