@@ -1,18 +1,32 @@
 <script setup lang="ts">
 import CreateLine from '@/components/CreateLine.vue';
+import { height, width } from '@/data/constants';
 import { easingFunctions } from '@/data/easingFunctions';
 import { useCategoryStore } from '@/stores/category';
+import { useIsMovingStore } from '@/stores/isMoving';
 import { usePresetStore } from '@/stores/preset';
 import { storeToRefs } from 'pinia';
+import { ref, watch } from 'vue';
 
 const categoryStore = useCategoryStore();
 const presetStore = usePresetStore();
+const isMovingStore = useIsMovingStore();
 const { category } = storeToRefs(categoryStore);
 const { preset } = storeToRefs(presetStore);
+const { isMoving } = storeToRefs(isMovingStore);
+
+const reRenderingKey = ref(0);
+
+watch([isMoving], () => {
+  reRenderingKey.value++;
+});
 </script>
 
 <template>
-  <div class="line-editor">
+  <div
+    class="line-editor"
+    :key="reRenderingKey"
+  >
     <div
       v-for="(easingFunctionArray, easingFunctionKey) in easingFunctions"
       v-show="category === easingFunctionKey"
@@ -22,8 +36,8 @@ const { preset } = storeToRefs(presetStore);
         v-for="(easingFunctionPreset, easingFunctionPresetIndex) in easingFunctionArray"
         v-show="preset[easingFunctionKey] === easingFunctionPresetIndex"
         :key="easingFunctionPreset.name"
-        :width="136"
-        :height="136"
+        :width="width"
+        :height="height"
         :x1="easingFunctionPreset.x1"
         :y1="easingFunctionPreset.y1"
         :x2="easingFunctionPreset.x2"
