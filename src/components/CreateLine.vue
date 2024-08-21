@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { useControllerStore } from '@/stores/controller';
+import { useIsMovingStore } from '@/stores/isMoving';
+import { ref } from 'vue';
 
 const props = defineProps<{
   width: number;
@@ -11,11 +13,61 @@ const props = defineProps<{
   thumbnail?: boolean;
 }>();
 
+const isMovingStore = useIsMovingStore();
+const controllerStore = useControllerStore();
+const { setIsMoving } = isMovingStore;
+const { setController } = controllerStore;
+
 // cssの左上が(0, 1)・svgの左上が(0,0)なので、座標を変換
-const svgX1 = computed(() => props.x1 * props.width);
-const svgY1 = computed(() => (1 - props.y1) * props.height);
-const svgX2 = computed(() => props.x2 * props.width);
-const svgY2 = computed(() => (1 - props.y2) * props.height);
+const svgX1 = ref(props.x1 * props.width);
+const svgY1 = ref((1 - props.y1) * props.height);
+const svgX2 = ref(props.x2 * props.width);
+const svgY2 = ref((1 - props.y2) * props.height);
+
+const circleStart = ref<HTMLElement | null>(null);
+const circleEnd = ref<HTMLElement | null>(null);
+
+const onPointerMoveStart = (event: PointerEvent) => {
+  if (event.buttons && circleStart.value) {
+    svgX1.value += event.movementX;
+    svgY1.value += event.movementY;
+    circleStart.value.setPointerCapture(event.pointerId);
+
+    if (props.width < svgX1.value) {
+      svgX1.value = props.width;
+    }
+
+    if (svgX1.value < 0) {
+      svgX1.value = 0;
+    }
+
+    setIsMoving(true);
+    setController(svgX1.value, svgY1.value, svgX2.value, svgY2.value);
+  }
+};
+
+const onPointerMoveEnd = (event: PointerEvent) => {
+  if (event.buttons && circleEnd.value) {
+    svgX2.value += event.movementX;
+    svgY2.value += event.movementY;
+    circleEnd.value.setPointerCapture(event.pointerId);
+
+    if (props.width < svgX2.value) {
+      svgX2.value = props.width;
+    }
+
+    if (svgX2.value < 0) {
+      svgX2.value = 0;
+    }
+
+    setIsMoving(true);
+    setController(svgX1.value, svgY1.value, svgX2.value, svgY2.value);
+  }
+};
+
+// onMounted(() => {
+//   setController(svgX1.value, svgY1.value, svgX2.value, svgY2.value);
+// });
 </script>
 
 <template>
@@ -50,6 +102,9 @@ const svgY2 = computed(() => (1 - props.y2) * props.height);
       :cy="svgY1"
       :r="thumbnail ? 2 : 7"
       :fill="thumbnail ? '#919191' : '#D090FF'"
+      :pointer-events="thumbnail ? 'none' : 'auto'"
+      ref="circleStart"
+      @pointermove="onPointerMoveStart"
     />
     <!-- 終点コントローラー -->
     <path
@@ -62,6 +117,9 @@ const svgY2 = computed(() => (1 - props.y2) * props.height);
       :cy="svgY2"
       :r="thumbnail ? 2 : 7"
       :fill="thumbnail ? '#919191' : '#D090FF'"
+      :pointer-events="thumbnail ? 'none' : 'auto'"
+      ref="circleEnd"
+      @pointermove="onPointerMoveEnd"
     />
   </svg>
 </template>
@@ -69,6 +127,8 @@ const svgY2 = computed(() => (1 - props.y2) * props.height);
 <style scoped>
 svg {
   overflow: visible;
+  position: relative;
+  z-index: 100;
 }
 
 circle {

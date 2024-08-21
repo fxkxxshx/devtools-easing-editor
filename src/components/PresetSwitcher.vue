@@ -1,26 +1,39 @@
 <script setup lang="ts">
 import { easingFunctions } from '@/data/easingFunctions';
 import { useCategoryStore } from '@/stores/category';
+import { useControllerStore } from '@/stores/controller';
+import { useIsMovingStore } from '@/stores/isMoving';
 import { usePresetStore } from '@/stores/preset';
 import { storeToRefs } from 'pinia';
 
 const categoryStore = useCategoryStore();
 const presetStore = usePresetStore();
+const isMovingStore = useIsMovingStore();
+const controllerStore = useControllerStore();
 const { category } = storeToRefs(categoryStore);
 const { preset } = storeToRefs(presetStore);
+const { isMoving } = storeToRefs(isMovingStore);
+const { controller } = storeToRefs(controllerStore);
 const { setPresetPrev, setPresetNext } = presetStore;
 </script>
 
 <template>
   <div class="preset-switcher">
     <button
+      v-show="!isMoving"
       @click="setPresetPrev(category)"
       class="prev"
     ></button>
     <p class="name">
-      {{ easingFunctions[category][preset[category]].name }}
+      <template v-if="!isMoving">
+        {{ easingFunctions[category][preset[category]].name }}
+      </template>
+      <template v-else>{{
+        `cubic-bezier(${controller[0][0]}, ${controller[0][1]}, ${controller[1][0]}, ${controller[1][1]})`
+      }}</template>
     </p>
     <button
+      v-show="!isMoving"
       @click="setPresetNext(category)"
       class="next"
     ></button>

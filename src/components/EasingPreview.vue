@@ -3,13 +3,19 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 import { easingFunctions } from '@/data/easingFunctions';
 import { useCategoryStore } from '@/stores/category';
+import { useControllerStore } from '@/stores/controller';
+import { useIsMovingStore } from '@/stores/isMoving';
 import { usePresetStore } from '@/stores/preset';
 import { storeToRefs } from 'pinia';
 
 const categoryStore = useCategoryStore();
 const presetStore = usePresetStore();
+const controllerStore = useControllerStore();
+const isMovingStore = useIsMovingStore();
 const { category } = storeToRefs(categoryStore);
 const { preset } = storeToRefs(presetStore);
+const { controller } = storeToRefs(controllerStore);
+const { isMoving } = storeToRefs(isMovingStore);
 
 const easingPreview = ref<HTMLElement | null>(null);
 const mainCircle = ref<HTMLElement | null>(null);
@@ -17,10 +23,26 @@ const afterimageCircles = ref<HTMLElement[] | null>(null);
 const easingPreviewWidth = ref<number>(0);
 const animationKey = ref(0);
 
-const x1 = computed(() => easingFunctions[category.value][preset.value[category.value]].x1);
-const y1 = computed(() => easingFunctions[category.value][preset.value[category.value]].y1);
-const x2 = computed(() => easingFunctions[category.value][preset.value[category.value]].x2);
-const y2 = computed(() => easingFunctions[category.value][preset.value[category.value]].y2);
+const x1 = computed(() =>
+  !isMoving.value
+    ? easingFunctions[category.value][preset.value[category.value]].x1
+    : controller.value[0][0]
+);
+const y1 = computed(() =>
+  !isMoving.value
+    ? easingFunctions[category.value][preset.value[category.value]].y1
+    : controller.value[0][1]
+);
+const x2 = computed(() =>
+  !isMoving.value
+    ? easingFunctions[category.value][preset.value[category.value]].x2
+    : controller.value[1][0]
+);
+const y2 = computed(() =>
+  !isMoving.value
+    ? easingFunctions[category.value][preset.value[category.value]].y2
+    : controller.value[1][1]
+);
 
 const renderingAfterimageCircles = () => {
   if (easingPreview.value && afterimageCircles.value) {
@@ -88,6 +110,12 @@ watch([x1, y1, x2, y2], () => {
   animationKey.value++;
   renderingAfterimageCircles();
 });
+
+// watch([controller], () => {
+//   if (isMoving) {
+//     x1 = controller.value[0][0]
+//   }
+// })
 
 onMounted(() => {
   if (easingPreview.value) {
