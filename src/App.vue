@@ -26,6 +26,9 @@ import SelectCategory from './components/SelectCategory.vue';
 }
 
 .block {
+  background-image: radial-gradient(#464747 1px, transparent 1px);
+  background-position: -5px 6px;
+  background-size: 17px 17px;
   display: flex;
   margin-top: 20px;
 }
