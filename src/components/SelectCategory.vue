@@ -41,6 +41,7 @@ const onClick = (easingFunctionKey: easingFunctionsKeyType) => {
 
 <style scoped>
 button {
+  background-color: #252626;
   border-radius: 4px;
   display: grid;
   height: 50px;
@@ -53,6 +54,6 @@ button + button {
 }
 
 button:hover {
-  background-color: #3f484a;
+  background-color: transparent;
 }
 </style>
