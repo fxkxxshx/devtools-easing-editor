@@ -21,6 +21,7 @@ import SelectCategory from './components/SelectCategory.vue';
   background-color: #252626;
   border-radius: 6px;
   height: 350px;
+  overflow: hidden;
   padding: 15px;
   width: 270px;
 }
@@ -31,5 +32,6 @@ import SelectCategory from './components/SelectCategory.vue';
   background-size: 17px 17px;
   display: flex;
   margin-top: 20px;
+  overflow: hidden;
 }
 </style>
